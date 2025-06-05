@@ -1,8 +1,42 @@
 #!/bin/bash
+  if [ -f /tmp/gekkofs_environment.sh ]; then
+    echo "[NIOWORKERSETUP] Loading GKFS environment"
+    source /tmp/gekkofs_environment.sh
+  fi
+  if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+    if [[ ! -n "${LIBGKFS_HOSTS_FILE}" ]]; then
+      echo "To use the COMPSS_GKFS_FEATURE LIBGKFS_HOSTS_FILE have to be set."
+      exit 1
+    fi
+    if [[ ! -n "${GKFS}" ]]; then
+      echo "To use the COMPSS_GKFS_FEATURE GKFS have to be set. It is the path to the libgkfs_intercept.so"
+      exit 1
+    fi
+    if [[ ! -n "${GKFS_LIBC}" ]]; then
+      echo "To use the COMPSS_GKFS_FEATURE GKFS_LIBC have to be set. It is the path to the libgkfs_libc_intercept.so"
+      exit 1
+    fi
+    if [[ -n "${LIBGKFS_WORKER_LOG_OUTPUT}" ]]; then
+      export LIBGKFS_LOG_OUTPUT=$LIBGKFS_WORKER_LOG_OUTPUT
+    fi
+  fi
+
+  function set_gkfs() {
+    if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+      export LD_PRELOAD=$1
+    fi
+  }
+
+  function unset_gkfs() {
+    if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+      unset LD_PRELOAD
+    fi
+  }
+
   JAVA_JRE_ERROR="ERROR: Can't find JVM libraries in JAVA_HOME. Please check your Java JRE Installation."
 
   NUM_PARAMS=41
-
+  set_gkfs $GKFS
   ######################
   # INTERNAL FUNCTIONS
   ######################
@@ -270,7 +304,7 @@
             source "$script"
         done
     fi
-
+  
     # Create sandbox
     if [ ! -d "$workingDir" ]; then
         mkdir -p "$workingDir"
@@ -349,7 +383,7 @@
     if [ "$(uname -m)" == "riscv64" ]; then
       worker_jvm_flags="${jvmFlags} ${compss_jvm_flags}"
     else
-      worker_jvm_flags="${jvmFlags} ${perf_jvm_flags} ${compss_jvm_flags}"
+      worker_jvm_flags="${jvmFlags} ${perf_jvm_flags} ${compss_jvm_flags} -Djdk.lang.Process.launchMechanism=fork"
     fi
 
     if [ "$lang" = "c" ] && [ "${persistentBinding}" = "true" ]; then
@@ -380,8 +414,8 @@ EOT
   }
 
   pre_launch() {
-    cd "$workingDir" || exit 1
-
+    # TODO : GekkoFS changing to a virtual directory without preload is going to fail (remove)
+    # cd "$workingDir" || exit 1
     if [ "${persistentBinding}" = "true" ]; then
     	export COMPSS_HOME=${SCRIPT_DIR}/../../../../../
     	export LD_LIBRARY_PATH=${COMPSS_HOME}/Bindings/bindings-common/lib:${COMPSS_HOME}/Bindings/c/lib:${LD_LIBRARY_PATH}
@@ -396,6 +430,7 @@ EOT
 
   clean_env() {
     if [ "${tracing}" == "true" ]; then
+      #TODO: Unsetting LD_PRELOAD at this level is bad for GekkoFS 
       unset LD_PRELOAD
       unset EXTRAE_HOME
       unset EXTRAE_LIB
@@ -450,3 +485,4 @@ EOT
       fi
     fi
   }
+

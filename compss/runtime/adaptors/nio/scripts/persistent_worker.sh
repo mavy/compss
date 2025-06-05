@@ -74,7 +74,6 @@
   fi
 
   post_launch
-
   # Exit
   if [ $exitValue -eq 0 ]; then
 	exit 0

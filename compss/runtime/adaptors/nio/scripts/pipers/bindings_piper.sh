@@ -215,16 +215,14 @@ process_pipe_commands() {
                 fi
 
                 echo "LD_PRELOAD bindings_piper.sh: ${LD_PRELOAD}"
-                keepLDPRELOAD="LD_PRELOAD=\"\$LD_PRELOAD\""
-                workerCMD="${keepLDPRELOAD} ${workerCMD}"
+                keepLDPRELOAD="LD_PRELOAD=${LD_PRELOAD}"
+                workerCMD="${workerCMD}"
 
                 # INVOKE WORKER
-                echo "[BINDINGS PIPER] Executing command: ${workerCMD}"
+                echo "[BINDINGS PIPER] Executing command: ${keepLDPRELOAD} ${workerCMD}"
                 # shellcheck disable=SC2086
-
-                eval ${workerCMD} </dev/null 4>/dev/null &
+                env ${keepLDPRELOAD} ${workerCMD} </dev/null 4>/dev/null & 
                 bindingPID=$!
-
                 # Disable EXTRAE automatic library initialisation (just in case)
                 if [ "${tracing}" == "true" ]; then
                   export EXTRAE_SKIP_AUTO_LIBRARY_INITIALIZE=1

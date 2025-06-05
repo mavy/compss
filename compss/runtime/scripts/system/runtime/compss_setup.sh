@@ -1,4 +1,31 @@
 #!/bin/bash
+if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+  if [[ ! -n "${LIBGKFS_HOSTS_FILE}" ]]; then
+    echo "To use the COMPSS_GKFS_FEATURE LIBGKFS_HOSTS_FILE have to be set."
+    exit 1
+  fi
+  if [[ ! -n "${GKFS}" ]]; then
+    echo "To use the COMPSS_GKFS_FEATURE GKFS have to be set. It is the path to the libgkfs_intercept.so"
+    exit 1
+  fi
+  if [[ ! -n "${GKFS_LIBC}" ]]; then
+    echo "To use the COMPSS_GKFS_FEATURE GKFS_LIBC have to be set. It is the path to the libgkfs_libc_intercept.so"
+    exit 1
+  fi
+fi
+
+function set_gkfs() {
+  if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+    # if $1 == GKFS then unset LIBGKFS_PROTECT_FD else set LIBGKFS_PROTECT_FD        
+    export LD_PRELOAD=$1
+  fi
+}
+
+function unset_gkfs() {
+  if [[ -n "${COMPSS_GKFS_FEATURE}" ]]; then
+    unset LD_PRELOAD
+  fi
+}
 
 if [ -n "${LOADED_SYSTEM_RUNTIME_COMPSS_SETUP}" ]; then
   return 0
@@ -49,7 +76,7 @@ source "${COMPSS_HOME}/Runtime/scripts/system/runtime/tracing.sh"
 # shellcheck disable=SC1091
 source "${COMPSS_HOME}/Runtime/scripts/system/runtime/storage.sh"
 
-
+set_gkfs $GKFS
 ###############################################
 ###############################################
 #     SIGNAL INTERCEPTION HANDLERS

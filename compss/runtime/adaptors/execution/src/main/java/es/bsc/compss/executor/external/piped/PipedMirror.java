@@ -103,6 +103,8 @@ public abstract class PipedMirror implements ExecutionPlatformMirror<PipePair> {
         if (!workingDir.endsWith(File.separator)) {
             workingDir += File.separator;
         }
+        // TODO: GekkoFS Pipe cannot be in a virtual directory
+        workingDir = "/tmp/";
         this.basePipePath = workingDir + PIPE_FILE_BASENAME + this.mirrorId + "_";
         this.size = size;
         this.pipePool = new HashMap<>();

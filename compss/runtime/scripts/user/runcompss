@@ -14,6 +14,10 @@ is_yaml_default=true
 is_output_profile_default=true
 is_graph_default=true
 provenance=false
+if [ -f /tmp/gekkofs_environment.sh ]; then
+  echo "[RUNCOMPSS] Loading GKFS environment"
+  source /tmp/gekkofs_environment.sh
+fi
 
 # Load auxiliar scripts
 # shellcheck source=../system/commons/logger.sh

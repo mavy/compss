@@ -30,8 +30,7 @@
 
 #define BUFF_ELEMENTS 9
 #define ARGS_OFFSET 5
-typedef int bool;
-enum { false, true };
+
 
 static FILE *stubsFile = NULL;
 static FILE *workerFile = NULL;
