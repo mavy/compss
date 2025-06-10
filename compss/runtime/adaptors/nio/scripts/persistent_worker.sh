@@ -36,6 +36,7 @@
 
   # Normal start -----------------------------------------------------
   # Setup
+  set_gkfs $GKFS
   setup_environment
   setup_extrae
   setup_jvm
@@ -66,7 +67,7 @@
   SETSID="setsid"
 
   export LD_PRELOAD=${LD_PRELOAD}:${AFTER_EXTRAE_LD_PRELOAD}
-
+  #TODO: The redirection fails in GekkoFS if the logDir is virtual
   "${SETSID}" $cmd ${paramsToCOMPSsWorker} 1> "${logDir}/worker_${hostName}.out" 2> "${logDir}/worker_${hostName}.err" < /dev/null | echo "$!" &
   exitValue=$?
   if [ "$exitValue" != "0" ]; then

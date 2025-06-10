@@ -36,7 +36,7 @@
   JAVA_JRE_ERROR="ERROR: Can't find JVM libraries in JAVA_HOME. Please check your Java JRE Installation."
 
   NUM_PARAMS=41
-  set_gkfs $GKFS
+
   ######################
   # INTERNAL FUNCTIONS
   ######################
@@ -165,6 +165,9 @@
     #NIOWorker.java getLogDir decides where the binding_worker.* files are stored
     #TODO: unify this with NIOWorker.java file getLogDir function to have it defined only in one place
     logDir=${workingDir}/log
+    #TODO: LogDir cannot be inside GekkoFS as we have a redirection of stdout/stdin that potentially fails/locks.
+    #TODO: Check if workingDIR is virtual or not.
+    logDir=/tmp/log
 
     if [ "$debug" == "true" ]; then
       echo "setup.sh"
@@ -430,7 +433,7 @@ EOT
 
   clean_env() {
     if [ "${tracing}" == "true" ]; then
-      #TODO: Unsetting LD_PRELOAD at this level is bad for GekkoFS 
+      #TODO: Unsetting LD_PRELOAD at this level could be bad for GekkoFS 
       unset LD_PRELOAD
       unset EXTRAE_HOME
       unset EXTRAE_LIB
