@@ -386,7 +386,7 @@
     if [ "$(uname -m)" == "riscv64" ]; then
       worker_jvm_flags="${jvmFlags} ${compss_jvm_flags}"
     else
-      worker_jvm_flags="${jvmFlags} ${perf_jvm_flags} ${compss_jvm_flags} -Djdk.lang.Process.launchMechanism=fork"
+      worker_jvm_flags="${jvmFlags} ${perf_jvm_flags} ${compss_jvm_flags}"
     fi
 
     if [ "$lang" = "c" ] && [ "${persistentBinding}" = "true" ]; then

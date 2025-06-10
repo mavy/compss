@@ -1,3 +1,4 @@
+# GekkoFS fails if debug is enabled in PyCOMPSs (Flush error) and all files go inside GekkoFS.
 export GKFS_INSTALL_PATH=/home/rnou/iodeps
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${GKFS_INSTALL_PATH}/lib:${GKFS_INSTALL_PATH}/lib64;
 export COMPSS_GKFS_FEATURE=on
